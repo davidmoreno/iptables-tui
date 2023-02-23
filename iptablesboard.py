@@ -1,75 +1,187 @@
 from textual.widgets import Button, Static, DataTable, Label
-from textual.containers import Container
+from textual.containers import Container, Horizontal
+from textual.scroll_view import ScrollView
+from textual.message import Message, MessageTarget
 
 
 class IpTablesBoard(Static):
     def compose(self):
-        yield Button("Incoming")
-        yield Static()
-        yield Static()
-        yield Button("Local Generated")
+        yield ScrollView(
+            Horizontal(
+                Label("Incoming", classes="choice"),
+                Static(),
+                Static(),
+                Label("Local Generated", classes="choice"),
+            ),
+            Horizontal(
+                Label("↓"),
+                Static(),
+                Static(),
+                Label("↓"),
+                classes="h1",
+            ),
+            Horizontal(
+                Button("raw | PREROUTING", classes="raw", id="raw-PREROUTING"),
+                Static(),
+                Static(),
+                Label("Routing Decision", classes="choice"),
+            ),
+            Horizontal(
+                Label("↓"),
+                Static(),
+                Static(),
+                Label("↓"),
+                classes="h1",
+            ),
+            Horizontal(
+                Label("Connection (state) Tracking", classes="choice"),
+                Static(),
+                Static(),
+                Button("raw | OUTPUT", classes="raw", id="raw-OUTPUT"),
+            ),
+            Horizontal(
+                Label("↓"),
+                Static(),
+                Static(),
+                Label("↓"),
+                classes="h1",
+            ),
+            Horizontal(
+                Button(
+                    "mangle | PREROUTING",
+                    classes="mangle",
+                    id="mangle-PREROUTING",
+                ),
+                Static(),
+                Static(),
+                Label("Connection (State) Tracking", classes="choice"),
+            ),
+            Horizontal(Label("↓"), Static(), Static(), Label("↓"), classes="h1"),
+            Horizontal(
+                Label("localhost source?", classes="choice h3"),
+                Label("→", classes="w1 h3"),
+                Button("nat | PREROUTING", classes="nat", id="nat-PREROUTING"),
+                Static(),
+                Button("mangle | OUTPUT", classes="mangle", id="mangle-OUTPUT"),
+            ),
+            Horizontal(
+                Label("↓"),
+                Label("↓"),
+                Static(),
+                Label("↓"),
+                classes="h1",
+            ),
+            Horizontal(
+                Label("↓"),
+                Label("Routing Decision", classes="choice"),
+                Static(),
+                Button("nat | OUTPUT", classes="nat", id="nat-OUTPUT"),
+            ),
+            Horizontal(
+                Label("↓"),
+                Label("↓"),
+                Static(),
+                Label("↓"),
+                classes="h1",
+            ),
+            Horizontal(
+                Label("↓"),
+                Label("→", classes="w1 h3"),
+                Label("For this host?", classes="choice"),
+                Label("→", classes="w1 h3"),
+                Button("mangle | FORWARD", classes="mangle", id="mangle-FORWARD"),
+                Label("Routing Decision", classes="choice"),
+            ),
+            Horizontal(
+                Static(),
+                Label("↓"),
+                Label("↓"),
+                Label("↓"),
+                classes="h1",
+            ),
+            Horizontal(
+                Static(),
+                Button("mangle | INPUT", classes="mangle", id="mangle-INPUT"),
+                Button("filter | FORWARD", classes="filter", id="filter-FORWARD"),
+                Button("filter | OUTPUT", classes="filter", id="filter-OUTPUT"),
+            ),
+            Horizontal(
+                Static(),
+                Label("↓"),
+                Label("↓"),
+                Label("↓"),
+                classes="h1",
+            ),
+            Horizontal(
+                Static(),
+                Button("filter | INPUT", classes="filter", id="filter-INPUT"),
+                Button("security | FORWARD", classes="security", id="security-FORWARD"),
+                Button("security | OUTPUT", classes="security", id="security-OUTPUT"),
+            ),
+            Horizontal(
+                Static(),
+                Label("↓"),
+                Label("↓"),
+                Label("↓"),
+                classes="h1",
+            ),
+            Horizontal(
+                Static(),
+                Button("security | INPUT", classes="security", id="security-INPUT"),
+                Label("Release to outbound", classes="choice"),
+                Label("←", classes="w1 h3"),
+                Label("←"),
+            ),
+            Horizontal(
+                Static(),
+                Label("↓"),
+                Label("↓"),
+                Static(),
+                classes="h1",
+            ),
+            Horizontal(
+                Static(),
+                Button("nat | INPUT", classes="nat", id="nat-INPUT"),
+                Button(
+                    "mangle | POSTROUTING", classes="mangle", id="mangle-POSTROUTING"
+                ),
+                Static(),
+            ),
+            Horizontal(
+                Static(),
+                Static(),
+                Label("↓"),
+                Static(),
+                classes="h1",
+            ),
+            Horizontal(
+                Static(),
+                Static(),
+                Label("Dest Localhost", classes="choice"),
+                Label("→", classes="w1 h3"),
+                Button("nat | POSTROUTING", classes="nat", id="nat-POSTROUTING"),
+            ),
+            Horizontal(
+                Static(),
+                Static(),
+                Label("↓"),
+                Label("↓"),
+                classes="h1",
+            ),
+            Horizontal(
+                Static(),
+                Static(),
+                Label("Outgoing packet", classes="choice"),
+                Label("←"),
+            ),
+        )
 
-        yield Label("↓")
-        yield Static()
-        yield Static()
-        yield Label("↓")
+    class SelectTableChain(Message):
+        def __init__(self, sender: MessageTarget, table: str, chain: str):
+            self.table = table
+            self.chain = chain
+            super().__init__(sender)
 
-        yield Button("raw | PREROUTING", classes="raw")
-        yield Static()
-        yield Static()
-        yield Button("Routing Decision")
-
-        yield Label("↓")
-        yield Static()
-        yield Static()
-        yield Label("↓")
-
-        yield Button("Connection (state) Tracking")
-        yield Static()
-        yield Static()
-        yield Button("raw | OUTPUT", classes="raw")
-
-        yield Label("↓")
-        yield Static()
-        yield Static()
-        yield Label("↓")
-
-        yield Button("mangle | PREROUTING", classes="mangle")
-        yield Static()
-        yield Static()
-        yield Button("Connection (State) Tracking")
-
-        yield Label("↓")
-        yield Static()
-        yield Static()
-        yield Label("↓")
-
-        yield Button("localhost source?")
-        yield Button("nat | PREROUTING", classes="nat")
-        yield Static()
-        yield Button("mangle | OUTPUT", classes="mangle")
-
-        yield Label("↓")
-        yield Static()
-        yield Static()
-        yield Label("↓")
-
-        yield Static()
-        yield Button("Routing Decision")
-        yield Static()
-        yield Button("nat | OUTPUT", classes="nat")
-
-        yield Static()
-        yield Button("For this host?")
-        yield Button("mangle | FORWARD", classes="mangle")
-        yield Button("Routing Decision")
-
-        yield Static()
-        yield Button("mangle | INPUT", classes="mangle")
-        yield Button("filter | FORWARD", classes="filter")
-        yield Button("filter | FORWARD Decision", classes="filter")
-
-        yield Static()
-        yield Button("filter | INPUT", classes="filter")
-        yield Button("security | FORWARD")
-        yield Button("security | OUTPUT")
+    async def on_button_pressed(self, event: Button.Pressed):
+        table, chain = event.button.id.split("-")
+        await self.post_message(self.SelectTableChain(self, table, chain))

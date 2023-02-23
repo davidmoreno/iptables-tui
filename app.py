@@ -60,18 +60,38 @@ class IpTablesTUIApp(App):
         ("Control+d", "toggle_dark", "Toggle Dark Mode"),
         ("Control+S", "save", "Save"),
         ("Control+L", "load", "Load"),
+        ("escape", "switch", "Switch Mode"),
     ]
+
+    tab = reactive(0)
 
     def compose(self) -> ComposeResult:
         yield Header()
         yield Footer()
         yield Container(IpTablesBoard())
+        yield ChainTable()
         # yield Container(
         #     TableTree(),
-        #     ChainTable(),
         #     Button("TEST", id="test"),
         #     id="main",
         # )
+
+    def on_mount(self):
+        self.add_class("tab-0")
+
+    def on_ip_tables_board_select_table_chain(
+        self, message: IpTablesBoard.SelectTableChain
+    ):
+        self.add_class("tab-1")
+        self.remove_class("tab-0")
+
+    def action_switch(self):
+        if "tab-0" in self.classes:
+            self.add_class("tab-1")
+            self.remove_class("tab-0")
+        else:
+            self.add_class("tab-0")
+            self.remove_class("tab-1")
 
     #     yield Container(ChainTable())
 
