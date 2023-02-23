@@ -1,0 +1,59 @@
+ChainTable {
+    width: 100%;
+    height: 100%;
+    align: right top;
+    column-span: 8;
+}
+
+TableTree {
+    column-span: 4;
+    dock: left;
+    height: 100%;
+    width: 20;
+}
+
+
+
+#title{
+    background: $primary-background;
+    width: 100%;
+    text-style: bold;
+}
+
+IpTablesBoard {
+    layout: grid;
+    grid-size: 4;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+IpTablesBoard Button{
+    width: 100%;
+    margin-right:1;
+    margin-left:1;
+}
+IpTablesBoard Label{
+    width: 100%;
+    content-align: center middle;
+    background: blue;
+}
+
+IpTablesBoard .raw {
+    background: red;
+}
+IpTablesBoard .mangle {
+    background: cyan;
+}
+IpTablesBoard .nat {
+    background: purple;
+}
+IpTablesBoard .filter {
+    background: green;
+}
+
+
+IpTablesBoard .raw{
+    background: red;
+}
+
