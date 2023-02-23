@@ -1,56 +1,73 @@
+from dataclasses import dataclass
+import sys
 from time import monotonic
 
 from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer
-from textual.widgets import Button, Static, DataTable, Label, Tree
 from textual.containers import Container
 from textual.reactive import reactive
-from textual import events
 
 from iptablesboard import IpTablesBoard
-
-ROWS = [
-    ("#", "IFACE", "PROTO", "IP", "PORT", "ACTION", "EXTRA"),
-    (1, "eth0", "*", "127.0.0.1", "80", "DROP"),
-    (2, "*", "*", "127.0.0.1", "22", "ACCEPT"),
-    (3, "eth0", "*", "127.0.0.1", "80", "DROP"),
-    (4, "*", "*", "127.0.0.1", "22", "ACCEPT"),
-    (5, "eth0", "*", "127.0.0.1", "80", "DROP"),
-    (6, "*", "*", "127.0.0.1", "22", "ACCEPT"),
-    (7, "eth0", "*", "127.0.0.1", "80", "DROP"),
-    (8, "*", "*", "127.0.0.1", "22", "ACCEPT"),
-    (9, "eth0", "*", "127.0.0.1", "80", "DROP"),
-    (10, "*", "*", "127.0.0.1", "22", "ACCEPT"),
-    (11, "eth0", "*", "127.0.0.1", "80", "DROP"),
-    (12, "*", "*", "127.0.0.1", "22", "ACCEPT"),
-    (13, "eth0", "*", "127.0.0.1", "80", "DROP"),
-    (14, "*", "*", "127.0.0.1", "22", "ACCEPT"),
-]
+from chaintable import ChainTable
 
 
-class ChainTable(Static):
-    def compose(self) -> ComposeResult:
-        yield DataTable()
+@dataclass
+class Rule:
+    proto: str = "*"
+    ip: str = "*"
+    port: str = "*"
+    iface: str = "*"
+    action: str = "*"
+    extra: str = "*"
 
-    def on_mount(self):
-        table = self.query_one(DataTable)
-        rows = iter(ROWS)
-        table.add_columns(*next(rows))
-        table.add_rows(rows)
+    def parse_rule(self, args):
+        while args:
+            if args[0] == "-i":
+                self.iface = args[1]
+                args = args[2:]
+            elif args[0] == "-p":
+                self.proto = args[1]
+                args = args[2:]
+            elif args[0] == "-j":
+                self.action = args[1]
+                args = args[2:]
+            elif args[0] == "-s":
+                self.ip = args[1]
+                args = args[2:]
+            elif args[0] == "--dport":
+                self.port = args[1]
+                args = args[2:]
+            else:
+                self.extra += args[0] + " "
+                args = args[1:]
+        return self
 
 
-class TableTree(Static):
-    def compose(self):
-        tree = Tree("Tables")
-        filter = tree.root.add("filter")
-        filter.add_leaf("INPUT")
-        filter.add_leaf("OUTPUT")
-        filter.add_leaf("FORWARD")
-        nat = tree.root.add("nat")
-        nat.add_leaf("INPUT")
-        nat.add_leaf("OUTPUT")
-        nat.add_leaf("FORWARD")
-        yield tree
+def load_tables(filename):
+    ret = {}
+
+    table = ""
+    chain = ""
+    with open(filename) as fd:
+        for line in fd:
+            line = line.strip()
+            if line.startswith("#"):
+                continue
+            elif line.startswith("*"):
+                table = line[1:]
+                ret[table] = {}
+            elif line.startswith(":"):
+                chain = line[1:].split()[0]
+                ret[table][chain] = []
+            elif line.startswith("-A"):
+                args = line[3:].split()
+                if args[0] not in ret[table]:
+                    ret[table][args[0]] = []
+                ret[table][args[0]].append(Rule().parse_rule(args))
+            elif line == "COMMIT":
+                continue
+
+    return ret
 
 
 class IpTablesTUIApp(App):
@@ -63,13 +80,14 @@ class IpTablesTUIApp(App):
         ("escape", "switch", "Switch Mode"),
     ]
 
+    tables = reactive(load_tables(sys.argv[1]))
     tab = reactive(0)
 
     def compose(self) -> ComposeResult:
         yield Header()
         yield Footer()
         yield Container(IpTablesBoard())
-        yield ChainTable()
+        yield ChainTable(self.tables["filter"]["INPUT"])
         # yield Container(
         #     TableTree(),
         #     Button("TEST", id="test"),
@@ -84,6 +102,10 @@ class IpTablesTUIApp(App):
     ):
         self.add_class("tab-1")
         self.remove_class("tab-0")
+        self.title = f"iptables TUI - {message.table} {message.chain}"
+
+        chaintable = self.query_one("ChainTable")
+        chaintable.rows = self.tables.get(message.table, {}).get(message.chain, [])
 
     def action_switch(self):
         if "tab-0" in self.classes:
@@ -99,3 +121,4 @@ class IpTablesTUIApp(App):
 if __name__ == "__main__":
     app = IpTablesTUIApp()
     app.run()
+    # print(load_tables())

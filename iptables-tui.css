@@ -5,11 +5,8 @@ ChainTable {
     column-span: 8;
 }
 
-TableTree {
-    column-span: 4;
-    dock: left;
-    height: 100%;
-    width: 20;
+ChainTable DataTable{
+    width: 100%;
 }
 
 IpTablesTUIApp.tab-0 IpTablesBoard{
