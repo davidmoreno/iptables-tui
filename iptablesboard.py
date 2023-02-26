@@ -2,10 +2,16 @@ from textual.widgets import Button, Static, DataTable, Label
 from textual.containers import Container, Horizontal
 from textual.scroll_view import ScrollView
 from textual.message import Message, MessageTarget
+from textual.reactive import reactive
 
 
 class IpTablesBoard(Static):
+    def __init__(self, tables):
+        self.tables = tables
+        super().__init__()
+
     def compose(self):
+        tables = self.tables
         yield ScrollView(
             Horizontal(
                 Label("Incoming", classes="choice"),
@@ -21,7 +27,7 @@ class IpTablesBoard(Static):
                 classes="h1",
             ),
             Horizontal(
-                Button("raw | PREROUTING", classes="raw", id="raw-PREROUTING"),
+                self.get_button("raw", "PREROUTING"),
                 Static(),
                 Static(),
                 Label("Routing Decision", classes="choice"),
@@ -37,7 +43,7 @@ class IpTablesBoard(Static):
                 Label("Connection (state) Tracking", classes="choice"),
                 Static(),
                 Static(),
-                Button("raw | OUTPUT", classes="raw", id="raw-OUTPUT"),
+                self.get_button("raw", "OUTPUT"),
             ),
             Horizontal(
                 Label("↓"),
@@ -60,9 +66,9 @@ class IpTablesBoard(Static):
             Horizontal(
                 Label("localhost source?", classes="choice h3"),
                 Label("→", classes="w1 h3"),
-                Button("nat | PREROUTING", classes="nat", id="nat-PREROUTING"),
+                self.get_button("nat", "PREROUTING"),
                 Static(),
-                Button("mangle | OUTPUT", classes="mangle", id="mangle-OUTPUT"),
+                self.get_button("mangle", "OUTPUT"),
             ),
             Horizontal(
                 Label("↓"),
@@ -75,7 +81,7 @@ class IpTablesBoard(Static):
                 Label("↓"),
                 Label("Routing Decision", classes="choice"),
                 Static(),
-                Button("nat | OUTPUT", classes="nat", id="nat-OUTPUT"),
+                self.get_button("nat", "OUTPUT"),
             ),
             Horizontal(
                 Label("↓"),
@@ -89,7 +95,7 @@ class IpTablesBoard(Static):
                 Label("→", classes="w1 h3"),
                 Label("For this host?", classes="choice"),
                 Label("→", classes="w1 h3"),
-                Button("mangle | FORWARD", classes="mangle", id="mangle-FORWARD"),
+                self.get_button("mangle", "FORWARD"),
                 Label("Routing Decision", classes="choice"),
             ),
             Horizontal(
@@ -101,9 +107,9 @@ class IpTablesBoard(Static):
             ),
             Horizontal(
                 Static(),
-                Button("mangle | INPUT", classes="mangle", id="mangle-INPUT"),
-                Button("filter | FORWARD", classes="filter", id="filter-FORWARD"),
-                Button("filter | OUTPUT", classes="filter", id="filter-OUTPUT"),
+                self.get_button("mangle", "INPUT"),
+                self.get_button("filter", "FORWARD"),
+                self.get_button("filter", "OUTPUT"),
             ),
             Horizontal(
                 Static(),
@@ -114,9 +120,9 @@ class IpTablesBoard(Static):
             ),
             Horizontal(
                 Static(),
-                Button("filter | INPUT", classes="filter", id="filter-INPUT"),
-                Button("security | FORWARD", classes="security", id="security-FORWARD"),
-                Button("security | OUTPUT", classes="security", id="security-OUTPUT"),
+                self.get_button("filter", "INPUT"),
+                self.get_button("security", "FORWARD"),
+                self.get_button("security", "OUTPUT"),
             ),
             Horizontal(
                 Static(),
@@ -127,7 +133,7 @@ class IpTablesBoard(Static):
             ),
             Horizontal(
                 Static(),
-                Button("security | INPUT", classes="security", id="security-INPUT"),
+                self.get_button("security", "INPUT"),
                 Label("Release to outbound", classes="choice"),
                 Label("←", classes="w1 h3"),
                 Label("←"),
@@ -141,7 +147,7 @@ class IpTablesBoard(Static):
             ),
             Horizontal(
                 Static(),
-                Button("nat | INPUT", classes="nat", id="nat-INPUT"),
+                self.get_button("nat", "INPUT"),
                 Button(
                     "mangle | POSTROUTING", classes="mangle", id="mangle-POSTROUTING"
                 ),
@@ -174,6 +180,18 @@ class IpTablesBoard(Static):
                 Label("Outgoing packet", classes="choice"),
                 Label("←"),
             ),
+        )
+
+    def get_button(self, table, chain):
+        count = len(self.tables.get(table, {}).get(chain, []))
+        if count:
+            suffix = f" ({count})"
+        else:
+            suffix = ""
+        return Button(
+            f"{table} | {chain}{suffix}",
+            classes=table,
+            id=f"{table}-{chain}",
         )
 
     class SelectTableChain(Message):

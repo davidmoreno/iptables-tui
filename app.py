@@ -86,7 +86,7 @@ class IpTablesTUIApp(App):
     def compose(self) -> ComposeResult:
         yield Header()
         yield Footer()
-        yield Container(IpTablesBoard())
+        yield Container(IpTablesBoard(self.tables))
         yield ChainTable(self.tables["filter"]["INPUT"])
         # yield Container(
         #     TableTree(),
