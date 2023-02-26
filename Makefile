@@ -9,6 +9,8 @@ setup:
 
 env:
 
+FILE=examples/01.iptables
+
 run: env 
-	env/bin/python3 app.py
+	env/bin/python3 app.py ${FILE}
 
