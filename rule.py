@@ -8,7 +8,7 @@ class Rule:
     port: str = "*"
     iface: str = "*"
     action: str = "*"
-    extra: str = "*"
+    extra: str = ""
 
     def parse_rule(self, args):
         while args:
@@ -53,7 +53,7 @@ def load_tables(filename):
                 args = line[3:].split()
                 if args[0] not in ret[table]:
                     ret[table][args[0]] = []
-                ret[table][args[0]].append(Rule().parse_rule(args))
+                ret[table][args[0]].append(Rule().parse_rule(args[1:]))
             elif line == "COMMIT":
                 continue
 
