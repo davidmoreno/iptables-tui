@@ -55,7 +55,7 @@ class IpTablesTUIApp(App):
         self.title = f"iptables TUI - {table} {chain}"
 
         chaintable = self.query_one("ChainTable")
-        chaintable.rows = self.tables.get(table, {}).get(chain, [])
+        chaintable.set_chain(self.tables.get(table, {}).get(chain, []))
         self.select_tab("chain")
         self.stack = [*self.stack, (table, chain)]
 

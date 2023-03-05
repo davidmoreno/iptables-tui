@@ -91,7 +91,10 @@ ChainTable #form {
 
 ChainTable #extra{
     column-span: 2;
-    height: 5;
+}
+ChainTable #description{
+    column-span: 2;
+    height: 1;
 }
 
 .w1 {

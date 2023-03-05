@@ -32,6 +32,42 @@ class Rule:
                 args = args[1:]
         return self
 
+    BUILTIN = ["DROP", "ACCEPT", "LOG", "RETURN"]
+
+    def description(self):
+        desc = []
+        if self.iface != "*":
+            desc.append(f"network interface is {self.iface}")
+        if self.proto != "*":
+            desc.append(f"protocol is {self.proto}")
+        if self.ip != "*":
+            desc.append(f"ip matches {self.ip}")
+        if self.port != "*":
+            desc.append(f"port is {self.port}")
+
+        if not desc:
+            desc = ["Always"]
+        else:
+            desc = ["If", self.comma_and(desc), "then"]
+
+        if self.action == "*":
+            desc.append("the default action is")
+            desc.append(self.extra)
+        elif self.action in self.BUILTIN:
+            desc.append(self.action)
+        else:
+            desc.append("jump to table")
+            desc.append(self.action)
+
+        return " ".join(desc)
+
+    def comma_and(self, lst):
+        if len(lst) == 0:
+            return ""
+        if len(lst) == 1:
+            return lst[0]
+        return f"{', '.join(lst[:-1])} and {lst[-1]}"
+
 
 def load_tables(filename):
     ret = {}

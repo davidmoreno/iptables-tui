@@ -28,14 +28,14 @@ class ChainTable(Static):
                 Label("Protocol"),
                 Input(placeholder="Port", id="port"),
                 Input(placeholder="Protocol", id="proto"),
-                Label("Action"),
-                Static(),
-                Input(placeholder="Action", id="action"),
-                Static(),
-                Label("Action"),
-                Static(),
-                Input(placeholder="Extra", id="extra"),
                 id="form",
+            ),
+            Container(
+                Label("Action"),
+                Input(placeholder="Action", id="action"),
+                Label("Extra"),
+                Input(placeholder="Extra", id="extra"),
+                Label("---", id="description"),
             ),
         )
 
@@ -47,6 +47,12 @@ class ChainTable(Static):
             for n, x in enumerate(self.rows)
         )
         table.add_rows(rows)
+        table.focus()
+
+    def set_chain(self, rows):
+        self.rows = rows
+        table = self.query_one(DataTable)
+        table.focus()
 
     def watch_rows(self, rows):
         table = self.query_one(DataTable)
@@ -76,3 +82,4 @@ class ChainTable(Static):
         self.query_one("#port").value = rule.port
         self.query_one("#action").value = rule.action
         self.query_one("#extra").value = rule.extra
+        self.query_one("#description").update(rule.description())
