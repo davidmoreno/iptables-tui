@@ -94,7 +94,11 @@ ChainTable #extra{
 }
 ChainTable #description{
     column-span: 2;
-    height: 1;
+    height: 3;
+    content-align: center middle;
+    background: $secondary;
+    color: black;
+    width: 100%;
 }
 
 .w1 {
@@ -107,4 +111,8 @@ ChainTable #description{
 
 .h3 {
     height: 3;
+}
+
+.grey{
+    color: grey;
 }

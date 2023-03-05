@@ -32,7 +32,7 @@ class Rule:
                 args = args[1:]
         return self
 
-    BUILTIN = ["DROP", "ACCEPT", "LOG", "RETURN"]
+    BUILTIN = ["DROP", "ACCEPT", "LOG", "RETURN", "*"]
 
     def description(self):
         desc = []

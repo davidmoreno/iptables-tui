@@ -11,6 +11,7 @@ HEADERS = ["#", "IFACE", "PROTO", "IP", "PORT", "ACTION", "EXTRA"]
 
 class ChainTable(Static):
     rows = reactive([])
+    chains = reactive({})
 
     def __init__(self, rows):
         super().__init__()
@@ -42,14 +43,10 @@ class ChainTable(Static):
     def on_mount(self):
         table = self.query_one(DataTable)
         table.add_columns(*HEADERS)
-        rows = (
-            (n, x.iface, x.proto, x.ip, x.port, x.action, x.extra)
-            for n, x in enumerate(self.rows)
-        )
-        table.add_rows(rows)
-        table.focus()
+        self.watch_rows(self.rows)
 
-    def set_chain(self, rows):
+    def set_chain(self, rows, chains):
+        self.chains = chains
         self.rows = rows
         table = self.query_one(DataTable)
         table.focus()
@@ -58,11 +55,20 @@ class ChainTable(Static):
         table = self.query_one(DataTable)
         table.clear()
 
+        def action(x):
+            if x.action in Rule.BUILTIN:
+                return x.action
+            rules = self.chains.get(x.action, None)
+            if rules is None:
+                return x.action
+            return f"{x.action} ({len(rules)})"
+
         rows = (
-            (n, x.iface, x.proto, x.ip, x.port, x.action, x.extra)
+            (n + 1, x.iface, x.proto, x.ip, x.port, action(x), x.extra)
             for n, x in enumerate(self.rows)
         )
         table.add_rows(rows)
+        table.focus()
 
     class SelectRule(Message):
         def __init__(self, sender: MessageTarget, rule: Rule):
@@ -71,6 +77,8 @@ class ChainTable(Static):
 
     async def on_data_table_cell_selected(self, msg):
         rule: Rule = self.rows[msg.coordinate.row]
+        if rule.action in rule.BUILTIN:
+            return
         await self.post_message(self.SelectRule(self, rule))
 
     async def on_data_table_cell_highlighted(self, msg):
