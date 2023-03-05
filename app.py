@@ -23,24 +23,27 @@ class IpTablesTUIApp(App):
         ("escape", "switch", "Back"),
     ]
 
-    tables = reactive(load_tables(sys.argv[1]))
+    tables = reactive(
+        load_tables("/home/dmoreno/src/iptables-tui/examples/01.iptables")
+    )
+    # tables = reactive(load_tables(sys.argv[1]))
     tab = reactive(0)
     stack = reactive([])
 
     def compose(self) -> ComposeResult:
         yield Header()
         yield IpTablesBoard(self.tables)
-        yield ChainTable(self.tables["filter"]["INPUT"])
+        yield ChainTable(self.tables["filter"]["FORWARD"])
         yield Footer()
 
-    def select_tab(self, tab: Literal["board", "chains"]):
+    def select_tab(self, tab: Literal["board", "chain"]):
         self.remove_class("board")
         self.remove_class("chain")
         self.add_class(tab)
         logs.append(f"Selected tab {tab}")
 
     def on_mount(self):
-        self.add_class("board")
+        self.select_tab("board")
 
     def on_ip_tables_board_select_table_chain(
         self, message: IpTablesBoard.SelectTableChain

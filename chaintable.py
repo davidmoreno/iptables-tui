@@ -1,6 +1,7 @@
 from textual.app import App, ComposeResult
-from textual.widgets import Button, Static, DataTable, Label, Tree
+from textual.widgets import Button, Static, DataTable, Label, Tree, Input
 from textual.reactive import reactive
+from textual.containers import Container, Horizontal
 from textual.message import Message, MessageTarget
 
 from rule import Rule
@@ -16,7 +17,27 @@ class ChainTable(Static):
         # self.rows = rows
 
     def compose(self) -> ComposeResult:
-        yield DataTable(fixed_columns=7)
+        yield Container(
+            DataTable(fixed_columns=7, id="table"),
+            Container(
+                Label("Interface"),
+                Label("Address / Netwok"),
+                Input(placeholder="Interface", id="iface"),
+                Input(placeholder="Address/Network", id="ip"),
+                Label("Port"),
+                Label("Protocol"),
+                Input(placeholder="Port", id="port"),
+                Input(placeholder="Protocol", id="proto"),
+                Label("Action"),
+                Static(),
+                Input(placeholder="Action", id="action"),
+                Static(),
+                Label("Action"),
+                Static(),
+                Input(placeholder="Extra", id="extra"),
+                id="form",
+            ),
+        )
 
     def on_mount(self):
         table = self.query_one(DataTable)
@@ -43,6 +64,15 @@ class ChainTable(Static):
             super().__init__(sender)
 
     async def on_data_table_cell_selected(self, msg):
-        rulen = msg.coordinate.row - 1
-        rule = self.rows[rulen]
+        rule: Rule = self.rows[msg.coordinate.row]
         await self.post_message(self.SelectRule(self, rule))
+
+    async def on_data_table_cell_highlighted(self, msg):
+        rule: Rule = self.rows[msg.coordinate.row]
+
+        self.query_one("#iface").value = rule.iface
+        self.query_one("#proto").value = rule.proto
+        self.query_one("#ip").value = rule.ip
+        self.query_one("#port").value = rule.port
+        self.query_one("#action").value = rule.action
+        self.query_one("#extra").value = rule.extra
