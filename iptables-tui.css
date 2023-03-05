@@ -9,10 +9,13 @@ ChainTable DataTable{
     width: 100%;
 }
 
-IpTablesTUIApp.tab-0 IpTablesBoard{
+IpTablesTUIApp.board IpTablesBoard{
     display: block;
 }
-IpTablesTUIApp.tab-1 ChainTable{
+IpTablesTUIApp.chain ChainTable{
+    display: block;
+}
+IpTablesTUIApp.inputdialog InputDialog{
     display: block;
 }
 
@@ -20,6 +23,9 @@ IpTablesTUIApp IpTablesBoard{
     display: none;
 }
 IpTablesTUIApp ChainTable{
+    display: none;
+}
+IpTablesTUIApp InputDialog{
     display: none;
 }
 

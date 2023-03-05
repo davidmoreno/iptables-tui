@@ -1,4 +1,5 @@
 import sys
+from typing import Literal, Union
 
 from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer, Static
@@ -28,12 +29,18 @@ class IpTablesTUIApp(App):
 
     def compose(self) -> ComposeResult:
         yield Header()
-        yield Container(IpTablesBoard(self.tables))
+        yield IpTablesBoard(self.tables)
         yield ChainTable(self.tables["filter"]["INPUT"])
         yield Footer()
 
+    def select_tab(self, tab: Literal["board", "chains"]):
+        self.remove_class("board")
+        self.remove_class("chain")
+        self.add_class(tab)
+        logs.append(f"Selected tab {tab}")
+
     def on_mount(self):
-        self.add_class("tab-0")
+        self.add_class("board")
 
     def on_ip_tables_board_select_table_chain(
         self, message: IpTablesBoard.SelectTableChain
@@ -46,8 +53,7 @@ class IpTablesTUIApp(App):
 
         chaintable = self.query_one("ChainTable")
         chaintable.rows = self.tables.get(table, {}).get(chain, [])
-        self.add_class("tab-1")
-        self.remove_class("tab-0")
+        self.select_tab("chain")
         self.stack = [*self.stack, (table, chain)]
 
     def on_chain_table_select_rule(self, message: ChainTable.SelectRule):
@@ -61,8 +67,7 @@ class IpTablesTUIApp(App):
             return
         self.stack = self.stack[:-1]
         if len(self.stack) == 0:
-            self.add_class("tab-0")
-            self.remove_class("tab-1")
+            self.select_tab("board")
             return
 
         table, chain = self.stack[-1]
