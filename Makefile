@@ -5,7 +5,7 @@ all:
 .PHONY: setup
 setup:
 	python3 -m venv env
-	pip install -f requirements.txt
+	env/bin/pip install -r requirements.txt
 
 env:
 
