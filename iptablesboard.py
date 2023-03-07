@@ -78,7 +78,7 @@ class IpTablesBoard(Static):
                 classes="h1",
             ),
             Horizontal(
-                Label("↓"),
+                Label("↓\n↓\n↓"),
                 Label("Routing Decision", classes="choice"),
                 Static(),
                 self.get_button("nat", "OUTPUT"),
@@ -91,7 +91,7 @@ class IpTablesBoard(Static):
                 classes="h1",
             ),
             Horizontal(
-                Label("↓"),
+                Label("      ↓\n      ↓→→→→→"),
                 Label("→", classes="w1 h3"),
                 Label("For this host?", classes="choice"),
                 Label("→", classes="w1 h3"),
