@@ -17,6 +17,7 @@ class IpTablesBoard(Static):
                 Label("Incoming", classes="choice"),
                 Static(),
                 Static(),
+                Label(" ", classes="w1 h3"),
                 Label("Local Generated", classes="choice"),
             ),
             Horizontal(
@@ -30,6 +31,7 @@ class IpTablesBoard(Static):
                 self.get_button("raw", "PREROUTING"),
                 Static(),
                 Static(),
+                Label(" ", classes="w1 h3"),
                 Label("Routing Decision", classes="choice"),
             ),
             Horizontal(
@@ -43,6 +45,7 @@ class IpTablesBoard(Static):
                 Label("Connection (state) Tracking", classes="choice"),
                 Static(),
                 Static(),
+                Label(" ", classes="w1 h3"),
                 self.get_button("raw", "OUTPUT"),
             ),
             Horizontal(
@@ -60,6 +63,7 @@ class IpTablesBoard(Static):
                 ),
                 Static(),
                 Static(),
+                Label(" ", classes="w1 h3"),
                 Label("Connection (State) Tracking", classes="choice"),
             ),
             Horizontal(Label("↓"), Static(), Static(), Label("↓"), classes="h1"),
@@ -79,8 +83,10 @@ class IpTablesBoard(Static):
             ),
             Horizontal(
                 Label("↓\n↓\n↓"),
+                Label(" ", classes="w1 h3"),
                 Label("Routing Decision", classes="choice"),
                 Static(),
+                Label(" ", classes="w1 h3"),
                 self.get_button("nat", "OUTPUT"),
             ),
             Horizontal(
@@ -96,6 +102,7 @@ class IpTablesBoard(Static):
                 Label("For this host?", classes="choice"),
                 Label("→", classes="w1 h3"),
                 self.get_button("mangle", "FORWARD"),
+                Label(" ", classes="w1 h3"),
                 Label("Routing Decision", classes="choice"),
             ),
             Horizontal(
@@ -107,8 +114,11 @@ class IpTablesBoard(Static):
             ),
             Horizontal(
                 Static(),
+                Label(" ", classes="w1 h3"),
                 self.get_button("mangle", "INPUT"),
+                Label(" ", classes="w1 h3"),
                 self.get_button("filter", "FORWARD"),
+                Label(" ", classes="w1 h3"),
                 self.get_button("filter", "OUTPUT"),
             ),
             Horizontal(
@@ -120,8 +130,11 @@ class IpTablesBoard(Static):
             ),
             Horizontal(
                 Static(),
+                Label(" ", classes="w1 h3"),
                 self.get_button("filter", "INPUT"),
+                Label(" ", classes="w1 h3"),
                 self.get_button("security", "FORWARD"),
+                Label(" ", classes="w1 h3"),
                 self.get_button("security", "OUTPUT"),
             ),
             Horizontal(
@@ -133,10 +146,12 @@ class IpTablesBoard(Static):
             ),
             Horizontal(
                 Static(),
+                Label(" ", classes="w1 h3"),
                 self.get_button("security", "INPUT"),
+                Label(" ", classes="w1 h3"),
                 Label("Release to outbound", classes="choice"),
                 Label("←", classes="w1 h3"),
-                Label("←"),
+                Label("←       "),
             ),
             Horizontal(
                 Static(),
@@ -147,7 +162,9 @@ class IpTablesBoard(Static):
             ),
             Horizontal(
                 Static(),
+                Label(" ", classes="w1 h3"),
                 self.get_button("nat", "INPUT"),
+                Label(" ", classes="w1 h3"),
                 Button(
                     "mangle | POSTROUTING", classes="mangle", id="mangle-POSTROUTING"
                 ),
@@ -155,15 +172,17 @@ class IpTablesBoard(Static):
             ),
             Horizontal(
                 Static(),
-                Static(),
+                Label("↓"),
                 Label("↓"),
                 Static(),
                 classes="h1",
             ),
             Horizontal(
                 Static(),
-                Static(),
-                Label("Dest Localhost", classes="choice"),
+                Label(" ", classes="w1 h3"),
+                Label("Local processing", classes="choice"),
+                Label(" ", classes="w1 h3"),
+                Label("Dest Localhost?", classes="choice"),
                 Label("→", classes="w1 h3"),
                 Button("nat | POSTROUTING", classes="nat", id="nat-POSTROUTING"),
             ),
@@ -176,9 +195,12 @@ class IpTablesBoard(Static):
             ),
             Horizontal(
                 Static(),
+                Label(" ", classes="w1 h3"),
                 Static(),
+                Label(" ", classes="w1 h3"),
                 Label("Outgoing packet", classes="choice"),
-                Label("←"),
+                Label(" ", classes="w1 h3"),
+                Label("←       "),
             ),
         )
 
