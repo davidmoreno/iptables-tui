@@ -2,7 +2,7 @@ from textual.app import App, ComposeResult
 from textual.widgets import Button, Static, DataTable, Label, Tree, Input
 from textual.reactive import reactive
 from textual.containers import Container, Horizontal
-from textual.message import Message, MessageTarget
+from textual.message import Message
 
 from rule import Rule
 
@@ -71,15 +71,15 @@ class ChainTable(Static):
         table.focus()
 
     class SelectRule(Message):
-        def __init__(self, sender: MessageTarget, rule: Rule):
+        def __init__(self, rule: Rule):
             self.rule = rule
-            super().__init__(sender)
+            super().__init__()
 
     async def on_data_table_cell_selected(self, msg):
         rule: Rule = self.rows[msg.coordinate.row]
         if rule.action in rule.BUILTIN:
             return
-        await self.post_message(self.SelectRule(self, rule))
+        self.post_message(self.SelectRule(rule))
 
     async def on_data_table_cell_highlighted(self, msg):
         rule: Rule = self.rows[msg.coordinate.row]
