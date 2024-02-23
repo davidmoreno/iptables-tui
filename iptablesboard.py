@@ -1,7 +1,7 @@
 from textual.widgets import Button, Static, DataTable, Label
 from textual.containers import Container, Horizontal
 from textual.scroll_view import ScrollView
-from textual.message import Message, MessageTarget
+from textual.message import Message
 from textual.reactive import reactive
 
 
@@ -217,11 +217,11 @@ class IpTablesBoard(Static):
         )
 
     class SelectTableChain(Message):
-        def __init__(self, sender: MessageTarget, table: str, chain: str):
+        def __init__(self, table: str, chain: str):
             self.table = table
             self.chain = chain
-            super().__init__(sender)
+            super().__init__()
 
     async def on_button_pressed(self, event: Button.Pressed):
         table, chain = event.button.id.split("-")
-        await self.post_message(self.SelectTableChain(self, table, chain))
+        self.post_message(self.SelectTableChain(table, chain))
